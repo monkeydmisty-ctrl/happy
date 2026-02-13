@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Valentine’s Day ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(120deg, #ff9a9e, #ff3c5c);
+  color: #fff;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+/* PASSWORD */
+#passwordScreen {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #ec648b;
+}
+#passwordScreen input {
+  padding: 12px 18px;
+  border-radius: 25px;
+  border: none;
+  font-size: 16px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* ENVELOPE */
+#intro {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #ec648b;
+}
+.envelope {
+  width: 200px;
+  height: 120px;
+  background: #ff2759;
+  border-radius: 10px;
+  font-size: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 1s;
+}
+.envelope.open { transform: rotateY(180deg); }
+
+/* MAIN */
+.container {
+  padding: 60px 20px;
+  max-width: 900px;
+  margin: auto;
+}
+.card {
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 30px;
+  margin: 20px 0;
+}
+button {
+  background: #ff4b5c;
+  border: none;
+  padding: 14px 26px;
+  border-radius: 30px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 10px;
+}
+button:hover { background: #ff1e38; transform: scale(1.05); }
+.hidden { display: none; }
+
+/* MUSIC */
+#musicControls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+}
+#musicControls button {
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+/* FLOATING HEARTS */
+.heart {
+  position: fixed;
+  bottom: -20px;
+  font-size: 24px;
+  animation: floatUp 6s linear infinite;
+}
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(-110vh); opacity: 0; }
+}
+
+/* SECRET GAME */
+#heartGame {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+.gameHeart {
+  position: absolute;
+  font-size: 40px;
+  cursor: pointer;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* VIDEO */
+#secretVideo video {
+  width: 100%;
+  max-width: 360px;
+  border-radius: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PASSWORD -->
+<div id="passwordScreen">
+  <h1>Enter Password 💖</h1>
+  <input type="password" id="passwordInput" placeholder="Password">
+  <button onclick="checkPassword()">Enter</button>
+</div>
+
+<!-- MUSIC -->
+<div id="musicControls" class="hidden">
+  <button onclick="toggleMusic()">🎵</button>
+  <button onclick="prevSong()">⏮</button>
+  <button onclick="nextSong()">⏭</button>
+</div>
+
+<!-- ENVELOPE -->
+<div id="intro">
+  <h1>Click the Envelope 🎁</h1>
+  <div class="envelope" id="envelope" onclick="openGift()">💌</div>
+</div>
+
+<!-- MAIN -->
+<div class="container hidden" id="valentine">
+  <h1>Happy Valentine’s Day 💖</h1>
+  <h2>To my cutie moma</h2>
+
+  <div class="card">
+    its been a year huh? we fight alot but we fix it always,
+    i love you sooo much moma thankyou for loving me too.
+  </div>
+
+  <div class="card">
+    <h3>Why I Love You?</h3>
+    <p>• you accept me as i am</p>
+    <p>• you always make efforts for me</p>
+    <p>• you are loyal and only mine</p>
+  </div>
+
+  <button onclick="showSurprise()">press this 💌</button>
+  <button onclick="openGame()">🎮 Play Game</button>
+  <button onclick="openInstagram()">Message Me 💌</button>
+
+  <div class="card hidden" id="surprise">
+    <h3>i will never leave you</h3>
+    <p>no matter what happens my love stays ❤️</p>
+  </div>
+
+  <!-- SECRET -->
+  <div class="card hidden" id="secretHint">
+    <h3>💞 A Secret Test</h3>
+    <p>Love has <b>3 beats</b>… tap them in order ❤️</p>
+    <button onclick="startSecretGame()">Start</button>
+  </div>
+
+  <div class="hidden" id="secretVideo">
+    <h3>For you… only if you found this 💖</h3>
+    <video controls>
+      <source src="video.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
+
+<div class="hidden" id="heartGame"></div>
+
+<audio id="bgMusic"></audio>
+
+<script>
+const music = document.getElementById("bgMusic");
+
+const songs = [
+  "wanna be yours.mp3",
+  "love.mp3",
+  "harleys in hawai.mp3",
+  "me gustas tu.mp3"
+];
+
+let currentSong = 0;
+let isPlaying = false;
+
+function loadSong() { music.src = songs[currentSong]; }
+
+function toggleMusic() {
+  if (!isPlaying) { music.play(); isPlaying = true; }
+  else { music.pause(); isPlaying = false; }
+}
+
+function nextSong() {
+  currentSong = (currentSong + 1) % songs.length;
+  loadSong(); music.play(); isPlaying = true;
+}
+
+function prevSong() {
+  currentSong = (currentSong - 1 + songs.length) % songs.length;
+  loadSong(); music.play(); isPlaying = true;
+}
+
+/* PASSWORD */
+function checkPassword() {
+  if (passwordInput.value === "priyanshuloveskelsi") {
+    passwordScreen.style.display = "none";
+    intro.style.display = "flex";
+    musicControls.classList.remove("hidden");
+    loadSong();
+  } else alert("Wrong password 💔");
+}
+
+/* ENVELOPE */
+function openGift() {
+  envelope.classList.add("open");
+  setTimeout(() => {
+    intro.style.display = "none";
+    valentine.classList.remove("hidden");
+    music.play().catch(()=>{});
+    isPlaying = true;
+  }, 1000);
+}
+
+function showSurprise() {
+  surprise.classList.remove("hidden");
+  secretHint.classList.remove("hidden");
+}
+
+function openGame() {
+  window.location.href = "strawberries.html";
+}
+function openInstagram() {
+  window.open("https://www.instagram.com/akoofx/", "_blank");
+}
+
+/* FLOATING HEARTS */
+setInterval(() => {
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.innerHTML = "❤️";
+  h.style.left = Math.random()*100 + "vw";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+},300);
+
+/* SECRET GAME */
+let correctOrder = [1,2,3];
+let userOrder = [];
+
+function startSecretGame() {
+  heartGame.innerHTML = "";
+  heartGame.classList.remove("hidden");
+  userOrder = [];
+
+  for (let i=1;i<=3;i++){
+    const heart=document.createElement("div");
+    heart.className="gameHeart";
+    heart.innerHTML="❤️";
+    heart.dataset.id=i;
+    heart.style.left=Math.random()*80+"vw";
+    heart.style.top=Math.random()*80+"vh";
+    heart.onclick=()=>tapHeart(i,heart);
+    heartGame.appendChild(heart);
+  }
+}
+
+function tapHeart(id, el) {
+  userOrder.push(id);
+  el.style.opacity="0.3";
+
+  for (let i=0;i<userOrder.length;i++){
+    if (userOrder[i]!==correctOrder[i]){
+      alert("Oops… love slipped 💔 Try again");
+      heartGame.classList.add("hidden");
+      return;
+    }
+  }
+
+  if (userOrder.length===3){
+    heartGame.classList.add("hidden");
+    secretVideo.classList.remove("hidden");
+  }
+}
+</script>
+
+</body>
+</html>
